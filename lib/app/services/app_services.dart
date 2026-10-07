@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kollection/db/repositories/config_reposity.dart';
+import 'package:kollection/app/services/app_preferences.dart';
 import 'package:provider/provider.dart';
 
 class AppHaptics {
   static void _maybe(VoidCallback feedback, BuildContext context) {
-    final enabled = context.read<ConfigRepository>().isEnabled(.appearance, 'haptics');
+    final enabled = context.read<AppPreferences>().prefs.getBool('haptics') ?? false;
     if (enabled) feedback();
   }
 

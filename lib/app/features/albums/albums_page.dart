@@ -4,8 +4,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:kollection/app/features/albums/album_page.dart';
+import 'package:kollection/app/models/album_model.dart';
 import 'package:kollection/app/shell/app_shell.dart';
-import 'package:kollection/db/models/features/album_model.dart';
 import 'package:path/path.dart' as path;
 import 'package:photo_manager/photo_manager.dart';
 

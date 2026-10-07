@@ -30,10 +30,11 @@ class _TabsSettingsPageState extends State<TabsSettingsPage> {
   }
 
   Padding __pageOrder() {
+    const String key = 'tabs';
     return Padding(
       padding: EdgeInsets.all(8),
       child: Selector<AppPreferences, List<String>>(
-        selector: (_, prefs) => prefs.prefs.getStringList('tabs') ?? [],
+        selector: (_, prefs) => prefs.prefs.getStringList(key) ?? [],
         builder: (ctx, tabString, _) {
           final tabs = tabString;
           return ReorderableListView.builder(
@@ -47,10 +48,7 @@ class _TabsSettingsPageState extends State<TabsSettingsPage> {
                 key: ValueKey(tab),
                 leading: Transform.scale(
                   scale: iconScale,
-                  child: Icon(
-                    NavRoute.values.byName(tab.toLowerCase()).icon,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  child: Icon(NavRoute.values.byName(tab.toLowerCase()).icon, color: Theme.of(context).colorScheme.primary),
                 ),
                 title: Padding(padding: const EdgeInsets.only(left: 8), child: Text(tab.toTitleCase)),
                 trailing: ReorderableDragStartListener(index: index, child: const Icon(Icons.drag_handle)),
@@ -60,7 +58,7 @@ class _TabsSettingsPageState extends State<TabsSettingsPage> {
               final reordered = List<String>.from(tabs);
               final moved = reordered.removeAt(oldIndex);
               reordered.insert(newIndex, moved);
-              context.read<AppPreferences>().update((p) => p.setStringList('tabs', reordered));
+              context.read<AppPreferences>().update((p) => p.setStringList(key, reordered));
             },
           );
         },

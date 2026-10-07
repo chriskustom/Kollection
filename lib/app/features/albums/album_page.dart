@@ -3,9 +3,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:kollection/app/features/images/image_page.dart';
+import 'package:kollection/app/models/album_model.dart';
+import 'package:kollection/app/models/image_file_model.dart';
 import 'package:kollection/app/utils/utils.dart';
-import 'package:kollection/db/models/features/album_model.dart';
-import 'package:kollection/db/models/features/image_model.dart';
 import 'package:path/path.dart' as path;
 import 'package:photo_manager/photo_manager.dart';
 import 'package:platform_detail/platform_detail.dart';

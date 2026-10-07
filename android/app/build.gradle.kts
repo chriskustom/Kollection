@@ -4,8 +4,7 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
-    id("dev.flutter.flutter-gradle-plugin")
+   id("dev.flutter.flutter-gradle-plugin")
 }
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
@@ -20,18 +19,18 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true      // ✅ Kotlin DSL syntax
+        isCoreLibraryDesugaringEnabled = true   
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "17"                           // ✅ Kotlin DSL prefers string
+        jvmTarget = "17"                         
     }
 
     defaultConfig {
         applicationId = "com.kustom.kollection"
-        minSdk = if (flutter.minSdkVersion < 21) 21 else flutter.minSdkVersion  // Force >= 21 for desugaring
+        minSdk = if (flutter.minSdkVersion < 21) 21 else flutter.minSdkVersion 
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

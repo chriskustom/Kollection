@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kollection/app/services/app_preferences.dart';
 import 'package:kollection/app/shell/app_shell.dart';
 import 'package:kollection/app/utils/constants.dart';
 import 'package:kollection/app/utils/utils.dart';
-import 'package:kollection/db/repositories/config_reposity.dart';
 import 'package:provider/provider.dart';
 
 class FormatsSettingsPage extends StatefulWidget {
@@ -29,11 +29,12 @@ class _FormatsSettingsPageState extends State<FormatsSettingsPage> {
   }
 
   Padding startOfWeek(BuildContext context) {
+    const String key = 'start_of_week';
     return Padding(
       padding: EdgeInsets.all(4),
-      child: Selector<ConfigRepository, String>(
-        selector: (_, repo) => repo.getSetting(category, 'start_of_week'),
-        builder: (context, fontSize, _) {
+      child: Selector<AppPreferences, String>(
+        selector: (_, repo) => repo.prefs.getString(key) ?? 'monday',
+        builder: (context, dow, _) {
           return ListTile(
             leading: const Icon(Icons.calendar_view_week_rounded),
             title: Text('First day of the week'),
@@ -43,10 +44,10 @@ class _FormatsSettingsPageState extends State<FormatsSettingsPage> {
               underline: const SizedBox.shrink(),
               padding: EdgeInsets.zero,
               items: [DropdownMenuItem(value: 'monday', child: Text('Monday')), DropdownMenuItem(value: 'sunday', child: Text('Sunday'))].toList(),
-              value: fontSize,
+              value: dow,
               onChanged: (value) {
                 if (value == null) return;
-                context.read<ConfigRepository>().setSetting(category: category, key: 'start_of_week', value: value);
+                context.read<AppPreferences>().update((p) => p.setString(key, value));
               },
             ),
           );
@@ -56,10 +57,11 @@ class _FormatsSettingsPageState extends State<FormatsSettingsPage> {
   }
 
   Padding fontSize(BuildContext context) {
+    const String key = 'font_size';
     return Padding(
       padding: EdgeInsets.all(4),
-      child: Selector<ConfigRepository, String>(
-        selector: (_, repo) => repo.getSetting(category, 'font_size'),
+      child: Selector<AppPreferences, String>(
+        selector: (_, repo) => repo.prefs.getString(key) ?? '16',
         builder: (context, fontSize, _) {
           return ListTile(
             leading: const Icon(Icons.format_size_rounded),
@@ -73,7 +75,7 @@ class _FormatsSettingsPageState extends State<FormatsSettingsPage> {
               value: fontSize,
               onChanged: (value) {
                 if (value == null) return;
-                context.read<ConfigRepository>().setSetting(category: category, key: 'font_size', value: value);
+                context.read<AppPreferences>().update((p) => p.setString(key, value));
               },
             ),
           );
@@ -90,42 +92,47 @@ class _FormatsSettingsPageState extends State<FormatsSettingsPage> {
   }
 
   Padding getFont(BuildContext context) {
-    final repo = context.watch<ConfigRepository>();
-    final font = repo.getSetting(category, 'font');
+    const String key = 'font';
 
     return Padding(
       padding: const EdgeInsets.all(4),
-      child: ListTile(
-        leading: const Icon(Icons.font_download_rounded),
-        title: const Text('Global font'),
-        subtitle: DropdownButton<String>(
-          isExpanded: true,
-          isDense: true,
-          underline: const SizedBox.shrink(),
-          padding: EdgeInsets.zero,
-          value: fonts.contains(font) ? font : fonts.first,
-          items: fonts
-              .map(
-                (f) => DropdownMenuItem(
-                  value: f,
-                  child: Text(f, style: TextStyle(fontFamily: f)),
-                ),
-              )
-              .toList(),
-          onChanged: (value) {
-            if (value == null) return;
-            repo.setSetting(category: category, key: 'font', value: value);
-          },
-        ),
+      child: Selector<AppPreferences, String>(
+        selector: (_, repo) => repo.prefs.getString(key) ?? 'Lato',
+        builder: (context, font, _) {
+          return ListTile(
+            leading: const Icon(Icons.font_download_rounded),
+            title: const Text('Global font'),
+            subtitle: DropdownButton<String>(
+              isExpanded: true,
+              isDense: true,
+              underline: const SizedBox.shrink(),
+              padding: EdgeInsets.zero,
+              value: fonts.contains(font) ? font : fonts.first,
+              items: fonts
+                  .map(
+                    (f) => DropdownMenuItem(
+                      value: f,
+                      child: Text(f, style: TextStyle(fontFamily: f)),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                if (value == null) return;
+                context.read<AppPreferences>().update((p) => p.setString(key, value));
+              },
+            ),
+          );
+        },
       ),
     );
   }
 
   Padding _shortDateFormat(BuildContext ctx) {
+    const String key = 'short_date_format';
     return Padding(
       padding: const EdgeInsets.all(4),
-      child: Selector<ConfigRepository, String>(
-        selector: (_, repo) => repo.getSetting(category, 'short_date_format'),
+      child: Selector<AppPreferences, String>(
+        selector: (_, repo) => repo.prefs.getString(key) ?? 'd/M/yy',
         builder: (context, savedFormat, _) {
           final safeFormat = shortdateFormats.contains(savedFormat) ? savedFormat : null;
           return ListTile(
@@ -140,7 +147,7 @@ class _FormatsSettingsPageState extends State<FormatsSettingsPage> {
               value: safeFormat,
               onChanged: (value) {
                 if (value == null) return;
-                context.read<ConfigRepository>().setSetting(category: category, key: 'short_date_format', value: value);
+                context.read<AppPreferences>().update((p) => p.setString(key, value));
               },
             ),
           );
@@ -150,10 +157,11 @@ class _FormatsSettingsPageState extends State<FormatsSettingsPage> {
   }
 
   Padding _longDateFormat(BuildContext ctx) {
+    const String key = 'long_date_format';
     return Padding(
       padding: const EdgeInsets.all(4),
-      child: Selector<ConfigRepository, String>(
-        selector: (_, repo) => repo.getSetting(category, 'long_date_format'),
+      child: Selector<AppPreferences, String>(
+        selector: (_, repo) => repo.prefs.getString(key) ?? 'EEE, dd.MM.yyyy H:mm a',
         builder: (context, savedFormat, _) {
           final safeFormat = longdateFormats.contains(savedFormat) ? savedFormat : null;
           return ListTile(
@@ -168,7 +176,7 @@ class _FormatsSettingsPageState extends State<FormatsSettingsPage> {
               value: safeFormat,
               onChanged: (value) {
                 if (value == null) return;
-                context.read<ConfigRepository>().setSetting(category: category, key: 'long_date_format', value: value);
+                context.read<AppPreferences>().update((p) => p.setString(key, value));
               },
             ),
           );

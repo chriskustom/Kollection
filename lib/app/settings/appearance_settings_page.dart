@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kollection/app/services/app_preferences.dart';
 import 'package:kollection/app/shell/app_shell.dart';
 import 'package:kollection/app/utils/constants.dart';
 import 'package:kollection/app/utils/utils.dart';
 import 'package:kollection/app/widgets/colour_picker.dart';
-import 'package:kollection/db/repositories/config_reposity.dart';
 import 'package:provider/provider.dart';
 
 class AppearanceSettings extends StatefulWidget {
@@ -23,40 +23,45 @@ class _AppearanceSettingsState extends State<AppearanceSettings> {
 
   @override
   Widget build(BuildContext context) {
-    var sysColours = context.watch<ConfigRepository>().isEnabled(category, 'system_colours');
     return AppShell(
       title: category.name.toTitleCase,
       showSearch: false,
       showNavBar: false,
-      body: ListView(
-        children: [
-          SizedBox(height: 16),
-          Padding(
-            padding: EdgeInsets.only(left: 16, top: 8),
-            child: Text('Look', style: Theme.of(context).textTheme.labelMedium),
-          ),
-          SizedBox(height: 8),
-          _themeItem(),
-          _useSystemColours(),
-          if (!sysColours) _colorScheme(),
-          SizedBox(height: 8),
-          Divider(),
-          Padding(
-            padding: EdgeInsets.only(left: 16, top: 8),
-            child: Text('Feel', style: Theme.of(context).textTheme.labelMedium),
-          ),
-          SizedBox(height: 8),
-          _enableHaptics(),
-        ],
+      body: Selector<AppPreferences, bool>(
+        selector: (_, prefs) => prefs.prefs.getBool('system_colours') ?? false,
+        builder: (context, sysColours, child) {
+          return ListView(
+            children: [
+              SizedBox(height: 16),
+              Padding(
+                padding: EdgeInsets.only(left: 16, top: 8),
+                child: Text('Look', style: Theme.of(context).textTheme.labelMedium),
+              ),
+              SizedBox(height: 8),
+              _themeItem(),
+              _useSystemColours(),
+              if (!sysColours) _colorScheme(),
+              SizedBox(height: 8),
+              Divider(),
+              Padding(
+                padding: EdgeInsets.only(left: 16, top: 8),
+                child: Text('Feel', style: Theme.of(context).textTheme.labelMedium),
+              ),
+              SizedBox(height: 8),
+              _enableHaptics(),
+            ],
+          );
+        },
       ),
     );
   }
 
   Padding _themeItem() {
+    const String key = 'theme';
     return Padding(
       padding: EdgeInsets.all(4),
-      child: Selector<ConfigRepository, String>(
-        selector: (_, repo) => repo.getSetting(category, 'theme'),
+      child: Selector<AppPreferences, String>(
+        selector: (_, repo) => repo.prefs.getString(key) ?? 'system',
         builder: (ctx, theme, _) {
           return ListTile(
             leading: Transform.scale(
@@ -71,7 +76,7 @@ class _AppearanceSettingsState extends State<AppearanceSettings> {
               underline: const SizedBox.shrink(),
               padding: EdgeInsets.zero,
               onChanged: (value) {
-                context.read<ConfigRepository>().setSetting(category: category, key: 'theme', value: value!);
+                context.read<AppPreferences>().update((p) => p.setString(key, value!));
               },
               items: const [
                 DropdownMenuItem(value: 'system', child: Text('System')),
@@ -86,10 +91,11 @@ class _AppearanceSettingsState extends State<AppearanceSettings> {
   }
 
   Padding _colorScheme() {
+    const String key = 'color';
     return Padding(
       padding: EdgeInsets.all(4),
-      child: Selector<ConfigRepository, String>(
-        selector: (_, repo) => repo.getSetting(category, 'color'),
+      child: Selector<AppPreferences, String>(
+        selector: (_, repo) => repo.prefs.getString(key) ?? Color.fromARGB(255, 209, 1, 199).toARGB32().toString(),
         builder: (ctx, dbColor, _) {
           final colorScheme = Theme.of(ctx).colorScheme.primary;
           return Column(
@@ -107,7 +113,7 @@ class _AppearanceSettingsState extends State<AppearanceSettings> {
                   primaryColor: colorScheme,
                   initialColor: dbColor,
                   onChanged: (color) {
-                    context.read<ConfigRepository>().setSetting(category: category, key: 'color', value: color.toARGB32().toString());
+                    context.read<AppPreferences>().update((p) => p.setString(key, color.toARGB32().toString()));
                   },
                 ),
               ),
@@ -119,11 +125,11 @@ class _AppearanceSettingsState extends State<AppearanceSettings> {
   }
 
   Padding _useSystemColours() {
-    const key = 'system_colours';
+    const String key = 'system_colours';
     return Padding(
       padding: const EdgeInsets.all(4),
-      child: Selector<ConfigRepository, bool>(
-        selector: (_, repo) => repo.isEnabled(category, key),
+      child: Selector<AppPreferences, bool>(
+        selector: (_, repo) => repo.prefs.getBool(key) ?? false,
         builder: (context, isEnabled, _) {
           return ListTile(
             leading: Transform.scale(
@@ -136,12 +142,12 @@ class _AppearanceSettingsState extends State<AppearanceSettings> {
               child: Switch.adaptive(
                 value: isEnabled,
                 onChanged: (value) {
-                  context.read<ConfigRepository>().setSetting(category: category, key: key, value: value ? '1' : '0');
+                  context.read<AppPreferences>().update((p) => p.setBool(key, value));
                 },
               ),
             ),
             onTap: () {
-              context.read<ConfigRepository>().setSetting(category: category, key: key, value: !isEnabled ? '1' : '0');
+              context.read<AppPreferences>().update((p) => p.setBool(key, !isEnabled));
             },
           );
         },
@@ -150,12 +156,12 @@ class _AppearanceSettingsState extends State<AppearanceSettings> {
   }
 
   Padding _enableHaptics() {
-    const key = 'haptics';
+    const String key = 'haptics';
 
     return Padding(
       padding: const EdgeInsets.all(4),
-      child: Selector<ConfigRepository, bool>(
-        selector: (_, repo) => repo.isEnabled(category, key),
+      child: Selector<AppPreferences, bool>(
+        selector: (_, repo) => repo.prefs.getBool(key) ?? false,
         builder: (context, isEnabled, _) {
           return ListTile(
             leading: Transform.scale(
@@ -168,10 +174,13 @@ class _AppearanceSettingsState extends State<AppearanceSettings> {
               child: Switch.adaptive(
                 value: isEnabled,
                 onChanged: (value) {
-                  context.read<ConfigRepository>().setSetting(category: category, key: key, value: value ? '1' : '0');
+                  context.read<AppPreferences>().update((p) => p.setBool(key, value));
                 },
               ),
             ),
+            onTap: () {
+              context.read<AppPreferences>().update((p) => p.setBool(key, !isEnabled));
+            },
           );
         },
       ),
