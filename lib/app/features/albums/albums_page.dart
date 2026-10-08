@@ -33,7 +33,12 @@ class _AlbumsPageState extends State<AlbumsPage> {
         shrinkWrap: true,
         physics: ScrollPhysics(),
         itemCount: albumImages.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: 2, crossAxisSpacing: 1, childAspectRatio: 1),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisSpacing: 2,
+          crossAxisSpacing: 1,
+          childAspectRatio: 1,
+        ),
         itemBuilder: (context, index) {
           final album = albumImages[index];
 
@@ -46,7 +51,7 @@ class _AlbumsPageState extends State<AlbumsPage> {
               final bytes = snapshot.data!;
 
               return Padding(
-                padding: .all(2),
+                padding: .all(6),
                 child: InkWell(
                   onTap: () {
                     showGeneralDialog(
@@ -69,7 +74,10 @@ class _AlbumsPageState extends State<AlbumsPage> {
                         );
                       },
                       transitionBuilder: (context, anim1, anim2, child) {
-                        final offsetAnimation = Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(anim1);
+                        final offsetAnimation = Tween<Offset>(
+                          begin: const Offset(1, 0),
+                          end: Offset.zero,
+                        ).animate(anim1);
                         return SlideTransition(position: offsetAnimation, child: child);
                       },
                     );
@@ -81,14 +89,16 @@ class _AlbumsPageState extends State<AlbumsPage> {
                       image: DecorationImage(
                         image: MemoryImage(bytes),
                         fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(Color.fromARGB(100, 0, 0, 0), BlendMode.darken),
+                        colorFilter: ColorFilter.mode(Color.fromARGB(50, 0, 0, 0), BlendMode.darken),
                       ),
                     ),
                     child: Align(
-                      alignment: Alignment.bottomRight,
+                      alignment: Alignment.bottomCenter,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
                         child: Row(
+                          mainAxisAlignment: .spaceBetween,
+                          mainAxisSize: .min,
                           children: [
                             Expanded(
                               child: Text(
@@ -98,8 +108,12 @@ class _AlbumsPageState extends State<AlbumsPage> {
                                 maxLines: 1,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            const Icon(Icons.folder, color: Colors.white),
+                            Text(
+                              '${album.images.length}',
+                              style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Colors.white),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
                           ],
                         ),
                       ),

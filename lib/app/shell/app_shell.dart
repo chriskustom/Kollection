@@ -3,9 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:kollection/app/services/app_services.dart';
 import 'package:kollection/app/utils/constants.dart';
-import 'package:kollection/app/utils/nav_page.dart';
 import 'package:kollection/app/widgets/kustom_app_bar.dart';
-import 'package:provider/provider.dart';
 
 class AppShell extends StatefulWidget {
   final String title;
@@ -13,6 +11,7 @@ class AppShell extends StatefulWidget {
   final Widget? floatingActionButton;
   final List<Object>? actions;
   final Widget? sorting;
+  final Widget? grouping;
   final List<IconButton>? selectActions;
   final bool showSearch;
   final bool showNavBar;
@@ -27,6 +26,7 @@ class AppShell extends StatefulWidget {
     this.selectActions,
     this.showSearch = true,
     this.showNavBar = true,
+    this.grouping,
   });
 
   @override
@@ -59,6 +59,7 @@ class _AppShellState extends State<AppShell> {
               title: widget.title,
               actions: widget.actions,
               sorting: widget.sorting,
+              grouping: widget.grouping,
               selectActions: widget.selectActions,
               showSearch: widget.showSearch,
             ),

@@ -14,11 +14,11 @@ MethodChannel androidChannel = const MethodChannel("com.kustom.kollection/androi
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
-  if (PlatformDetail.isDesktop) {
-    await windowManager.ensureInitialized();
-    windowManager.setMinimumSize(Size(360, 640));
-    windowManager.setMaximumSize(Size(414, 896));
-  }
+  // if (PlatformDetail.isDesktop) {
+  //   await windowManager.ensureInitialized();
+  //   windowManager.setMinimumSize(Size(360, 640));
+  //   windowManager.setMaximumSize(Size(414, 896));
+  // }
 
   tz.initializeTimeZones();
   try {

@@ -3,11 +3,14 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:kollection/app/features/images/image_page.dart';
-import 'package:kollection/app/models/image_file_model.dart';
+import 'package:kollection/app/services/app_preferences.dart';
 import 'package:kollection/app/shell/app_shell.dart';
+import 'package:kollection/app/utils/utils.dart';
+import 'package:kollection/app/widgets/image_list.dart';
+import 'package:kollection/app/widgets/menus/sort_menu.dart';
 import 'package:path/path.dart' as path;
 import 'package:photo_manager/photo_manager.dart';
+import 'package:provider/provider.dart';
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
@@ -29,84 +32,46 @@ class _GalleryPageState extends State<GalleryPage> {
   Widget build(BuildContext context) {
     return AppShell(
       title: 'Gallery',
-      body: GridView.builder(
-        shrinkWrap: true,
-        physics: const ScrollPhysics(),
-        itemCount: images.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: 2,
-          crossAxisSpacing: 1,
-          childAspectRatio: 1,
-        ),
-        itemBuilder: (context, index) {
-          final image = images[index];
-
-          return FutureBuilder<Uint8List>(
-            future: _getBytes(image),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Container(color: Colors.grey);
-              }
-              return Padding(
-                padding: const EdgeInsets.all(2),
-                child: InkWell(
-                  onTap: () async {
-                    final imageFile = await _toImageFile(image);
-                    if (!context.mounted) return;
-                    showGeneralDialog(
-                      context: context,
-                      barrierLabel: "Right Sheet",
-                      barrierDismissible: true,
-                      barrierColor: Colors.black54,
-                      transitionDuration: const Duration(milliseconds: 200),
-                      pageBuilder: (context, anim1, anim2) {
-                        return Align(
-                          alignment: Alignment.centerRight,
-                          child: Material(
-                            color: Colors.white,
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              height: double.infinity,
-                              child: ImagePage(image: imageFile),
-                            ),
-                          ),
-                        );
-                      },
-                      transitionBuilder: (context, anim1, anim2, child) {
-                        final offsetAnimation = Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(anim1);
-                        return SlideTransition(position: offsetAnimation, child: child);
-                      },
-                    );
-                  },
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      image: DecorationImage(image: MemoryImage(snapshot.data!), fit: BoxFit.cover),
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
+      sorting: _sortMenu(),
+      grouping: _groupMenu(),
+      body: ImageList(images: images),
     );
   }
 
-  Future<ImageFile> _toImageFile(Object image) async {
-    if (image is File) {
-      return ImageFile(name: path.basename(image.path), path: image.path, bytes: await image.readAsBytes());
-    }
+  Widget _sortMenu() {
+    return Selector<AppPreferences, (String, String)>(
+      selector: (p0, p) => (p.prefs.getString('sortOrder') ?? 'asc', p.prefs.getString('sortBy') ?? 'title'),
+      builder: (context, values, child) {
+        var (sortOrder, sortBy) = values;
+        return SortMenu(
+          sortOrder: StringUtils.parseOrder(sortOrder),
+          sortBy: StringUtils.parseSortBy(sortBy),
+          setState: (by, order) {
+            setState(() {
+              // sortBy = by;
+              // sortOrder = order;
+            });
+          },
+        );
+      },
+    );
+  }
 
-    if (image is AssetEntity) {
-      final bytes = await image.getOriginBytes();
-
-      return ImageFile(name: image.title ?? 'Image', path: image.id, bytes: bytes ?? Uint8List(0));
-    }
-
-    throw UnsupportedError('Unsupported image type: ${image.runtimeType}');
+  Widget _groupMenu() {
+    return Selector<AppPreferences, String>(
+      selector: (p0, p) => p.prefs.getString('groupBy') ?? 'day',
+      builder: (context, groupBy, child) {
+        return GroupMenu(
+          groupBy: StringUtils.parseGroupBy(groupBy),
+          setState: (by) {
+            setState(() {
+              // sortBy = by;
+              // sortOrder = order;
+            });
+          },
+        );
+      },
+    );
   }
 
   Future<bool> isValidImage(Uint8List bytes) async {
@@ -193,18 +158,5 @@ class _GalleryPageState extends State<GalleryPage> {
     }
 
     return null;
-  }
-
-  Future<Uint8List> _getBytes(dynamic image) async {
-    if (image is File) {
-      return await image.readAsBytes();
-    }
-
-    if (image is AssetEntity) {
-      final bytes = await image.getOriginBytes();
-      return bytes ?? Uint8List(0);
-    }
-
-    return Uint8List(0);
   }
 }

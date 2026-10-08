@@ -11,6 +11,7 @@ class KustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final List<Object>? actions;
   final Widget? sorting;
+  final Widget? grouping;
   final List<IconButton>? selectActions;
   final bool showSearch;
 
@@ -21,6 +22,7 @@ class KustomAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.sorting,
     this.selectActions,
     this.showSearch = true,
+    this.grouping,
   });
 
   @override
@@ -98,6 +100,7 @@ class _KustomAppBarState extends State<KustomAppBar> with SingleTickerProviderSt
     return [
       if (widget.selectActions != null) ...widget.selectActions!,
       if (widget.sorting != null && (widget.selectActions == null || widget.selectActions!.isEmpty)) widget.sorting!,
+      if (widget.grouping != null && (widget.selectActions == null || widget.selectActions!.isEmpty)) widget.grouping!,
       if (others.isNotEmpty) ...others,
       TripleDotMenu(
         options: [
