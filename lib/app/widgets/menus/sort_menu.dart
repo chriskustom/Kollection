@@ -5,13 +5,8 @@ import 'package:kollection/app/utils/sort_option.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SortMenu extends StatelessWidget {
-  const SortMenu({
-    super.key,
-    required this.sortOrder,
-    required this.sortBy,
-    required this.setState,
-    this.options = sortOptions,
-  });
+  const SortMenu({super.key, required this.sortOrder, required this.sortBy, required this.setState, this.options = sortOptions, required this.route});
+  final NavRoute route;
   final List<SortOption> options;
   final SortOrder sortOrder;
   final SortBy sortBy;
@@ -24,8 +19,8 @@ class SortMenu extends StatelessWidget {
       onSelected: (option) async {
         AppHaptics.selection(context);
         var prefs = await SharedPreferences.getInstance();
-        prefs.setString('sortBy', option.sortBy.name);
-        prefs.setString('sortOrder', option.order.name);
+        prefs.setString('${route.name}_sortBy', option.sortBy.name);
+        prefs.setString('${route.name}_sortOrder', option.order.name);
 
         setState(option.sortBy, option.order);
       },
@@ -55,7 +50,7 @@ class GroupMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<GroupOption>(
-      icon: const Icon(Icons.group),
+      icon: const Icon(Icons.collections),
       onOpened: () => AppHaptics.selection(context),
       onSelected: (option) async {
         AppHaptics.selection(context);

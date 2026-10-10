@@ -51,8 +51,8 @@ class _ImageListState extends State<ImageList> {
     if (!mounted) return;
 
     setState(() {
-      _sortBy = StringUtils.parseSortBy(prefs.prefs.getString('sortBy'));
-      _sortOrder = StringUtils.parseOrder(prefs.prefs.getString('sortOrder'));
+      _sortBy = StringUtils.parseSortBy(prefs.prefs.getString('gallery_sortBy'));
+      _sortOrder = StringUtils.parseOrder(prefs.prefs.getString('gallery_sortOrder'));
       _groupBy = StringUtils.parseGroupBy(prefs.prefs.getString('groupBy'));
 
       _sortImages();
@@ -171,20 +171,7 @@ class _ImageListState extends State<ImageList> {
   }
 
   String _monthName(int month) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
     return months[month - 1];
   }
@@ -220,11 +207,8 @@ class _ImageListState extends State<ImageList> {
   @override
   Widget build(BuildContext context) {
     return Selector<AppPreferences, (String, String, String)>(
-      selector: (p0, p) => (
-        p.prefs.getString('sortOrder') ?? 'asc',
-        p.prefs.getString('sortBy') ?? 'title',
-        p.prefs.getString('groupBy') ?? 'day',
-      ),
+      selector: (p0, p) =>
+          (p.prefs.getString('gallery_sortOrder') ?? 'asc', p.prefs.getString('gallery_sortBy') ?? 'title', p.prefs.getString('groupBy') ?? 'day'),
       builder: (context, values, child) {
         var (sortOrder, sortBy, groupBy) = values;
 
@@ -249,10 +233,7 @@ class _ImageListState extends State<ImageList> {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
-                    child: Text(
-                      _groupTitle(entry.key),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                    ),
+                    child: Text(_groupTitle(entry.key), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                   ),
                 ),
 

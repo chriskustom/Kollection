@@ -3,12 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:kollection/app/services/app_preferences.dart';
 import 'package:kollection/app/shell/app.dart';
-import 'package:platform_detail/platform_detail.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:window_manager/window_manager.dart';
 
 MethodChannel androidChannel = const MethodChannel("com.kustom.kollection/android");
 Future main() async {

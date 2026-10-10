@@ -40,10 +40,11 @@ class _GalleryPageState extends State<GalleryPage> {
 
   Widget _sortMenu() {
     return Selector<AppPreferences, (String, String)>(
-      selector: (p0, p) => (p.prefs.getString('sortOrder') ?? 'asc', p.prefs.getString('sortBy') ?? 'title'),
+      selector: (p0, p) => (p.prefs.getString('gallery_sortOrder') ?? 'asc', p.prefs.getString('gallery_sortBy') ?? 'title'),
       builder: (context, values, child) {
         var (sortOrder, sortBy) = values;
         return SortMenu(
+          route: .gallery,
           sortOrder: StringUtils.parseOrder(sortOrder),
           sortBy: StringUtils.parseSortBy(sortBy),
           setState: (by, order) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kollection/app/services/app_services.dart';
 import 'package:kollection/app/settings/settings_page.dart';
+import 'package:kollection/app/theme/theme.dart';
 import 'package:kollection/app/utils/constants.dart';
 import 'package:kollection/app/utils/fade_route.dart';
 import 'package:kollection/app/widgets/about_dialog.dart';
@@ -15,15 +16,7 @@ class KustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final List<IconButton>? selectActions;
   final bool showSearch;
 
-  const KustomAppBar({
-    super.key,
-    required this.title,
-    this.actions,
-    this.sorting,
-    this.selectActions,
-    this.showSearch = true,
-    this.grouping,
-  });
+  const KustomAppBar({super.key, required this.title, this.actions, this.sorting, this.selectActions, this.showSearch = true, this.grouping});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -73,14 +66,10 @@ class _KustomAppBarState extends State<KustomAppBar> with SingleTickerProviderSt
         duration: const Duration(milliseconds: 250),
         switchInCurve: Curves.easeInOut,
         switchOutCurve: Curves.easeInOut,
-        child: Text(
-          widget.title,
-          key: const ValueKey("title"),
-          style: Theme.of(context).textTheme.labelLarge,
-          textScaler: TextScaler.linear(1.1),
-        ),
+        child: Text(widget.title, key: const ValueKey("title"), style: Theme.of(context).textTheme.labelLarge, textScaler: TextScaler.linear(1.1)),
       ),
       actions: _buildMenu(context),
+      flexibleSpace: Container(decoration: BoxDecoration(gradient: context.linearGradientLR)),
     );
   }
 

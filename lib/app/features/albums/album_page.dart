@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kollection/app/models/album_model.dart';
+import 'package:kollection/app/shell/app_shell.dart';
 import 'package:kollection/app/widgets/image_list.dart';
 
 class AlbumPage extends StatefulWidget {
@@ -13,11 +14,9 @@ class AlbumPage extends StatefulWidget {
 class _AlbumPageState extends State<AlbumPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.inversePrimary, title: Text(widget.album.title)),
+    return AppShell(
+      title: widget.album.title,
       body: ImageList(images: widget.album.images),
-
-      floatingActionButton: FloatingActionButton(onPressed: () {}, tooltip: 'Increment', child: const Icon(Icons.add)),
     );
   }
 }
